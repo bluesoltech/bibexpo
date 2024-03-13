@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import { Suspense, lazy } from "react";
 import Loading from "../components/Loader/Loading";
+import Certificate from "../pages/Certificate";
 
 const Home = lazy(() => import("../pages/Home"));
 const Login = lazy(() => import("../pages/User/Login"));
@@ -128,6 +129,7 @@ const Routers = () => {
           </Suspense>
         }
       />
+      <Route path="walkofhope/certificate" element={<Certificate />} />
       <Route
         path="*"
         element={

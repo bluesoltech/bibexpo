@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { BASE_URL } from "../../config";
 import { authContext } from "../../context/AuthContext";
+import { toast } from "react-toastify";
 
 function isEmpty(obj) {
   return Object.keys(obj).length === 0;
@@ -8,7 +9,13 @@ function isEmpty(obj) {
 
 function Participant({ participant }) {
   const { user } = useContext(authContext);
-  const [recieved, setRecieved] = useState(false);
+  const [recieved, setRecieved] = useState({
+    success: false,
+    data: {},
+    handler: "",
+  });
+
+  console.log(recieved);
   const [formData, setFormData] = useState({
     bookingId: participant["Booking ID"],
     bibId: "",
@@ -38,12 +45,20 @@ function Participant({ participant }) {
 
       const result = await res.json();
       if (!res.ok) {
+        // console.log(result);
+        setRecieved({
+          success: true,
+          data: result.data,
+          handler: result.handler,
+        });
         throw new Error(result.message);
       }
-      setRecieved(false);
+      setRecieved({
+        success: false,
+        data: {},
+      });
     } catch (err) {
-      console.log(err);
-      setRecieved(true);
+      toast.error(err);
     }
   };
 
@@ -75,7 +90,17 @@ function Participant({ participant }) {
       if (!res.ok) {
         throw new Error(result.message);
       }
-      setRecieved(true);
+      setRecieved({
+        success: true,
+        handler: "self",
+        data: {
+          Rname: formData.rname,
+          Rphone: formData.rphone,
+          Rrelation: formData.rrelation,
+          BibID: formData.bibId,
+          bookingId: participant["Booking ID"],
+        },
+      });
       setFormData({
         bookingId: participant["Booking ID"],
         bibId: "",
@@ -98,7 +123,17 @@ function Participant({ participant }) {
       handleRecieverCheck();
     }
   }, [participant]);
-  if (recieved) return <div>Recieved</div>;
+  if (recieved.success)
+    return (
+      <div className="grid grid-cols-6 p-5 w-full bg-black text-white">
+        <div className="">{recieved.handler}</div>
+        <div className="">{recieved.data.Rname}</div>
+        <div className="">{recieved.data.Rphone}</div>
+        <div className="">{recieved.data.Rrelation}</div>
+        <div className="">{recieved.data.BibID}</div>
+        <div className="">{recieved.data.bookingId}</div>
+      </div>
+    );
   return (
     <div className="relative">
       {isEmpty(participant) ? (

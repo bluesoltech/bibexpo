@@ -95,12 +95,16 @@ export const findReciever = async (req, res) => {
   try {
     let temp = null;
     temp = await Participant.find({ bookingId: bookingId });
-    if (temp.length > 0)
-      res.status(400).json({
+    if (temp.length > 0) {
+      const handler = await Handler.findById(temp[0].handler);
+      // console.log(handler);
+      return res.status(400).json({
         success: false,
         message: "User has already recieved their BIB",
+        data: temp[0],
+        handler: handler.username,
       });
-    else {
+    } else {
       res.status(200).json({ success: true, message: "Success" });
     }
   } catch (error) {
